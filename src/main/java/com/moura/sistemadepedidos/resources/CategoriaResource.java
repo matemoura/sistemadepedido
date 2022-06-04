@@ -11,7 +11,7 @@ import com.moura.sistemadepedidos.domain.Categoria;
 import com.moura.sistemadepedidos.servicies.CategoriaService;
 
 @RestController
-@RequestMapping(value="/categoria")
+@RequestMapping(value="/categorias")
 public class CategoriaResource {
 	
 	@Autowired
