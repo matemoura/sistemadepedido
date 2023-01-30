@@ -15,11 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.moura.sistemadepedidos.domain.Cidade;
 import com.moura.sistemadepedidos.domain.Cliente;
 import com.moura.sistemadepedidos.domain.Endereco;
+import com.moura.sistemadepedidos.domain.enums.Perfil;
 import com.moura.sistemadepedidos.domain.enums.TipoCliente;
 import com.moura.sistemadepedidos.dto.ClienteDTO;
 import com.moura.sistemadepedidos.dto.ClienteNewDTO;
 import com.moura.sistemadepedidos.repositories.ClienteRepository;
 import com.moura.sistemadepedidos.repositories.EnderecoRepository;
+import com.moura.sistemadepedidos.security.UserSS;
+import com.moura.sistemadepedidos.servicies.exceptions.AuthorizationException;
 import com.moura.sistemadepedidos.servicies.exceptions.DataIntegrityException;
 import com.moura.sistemadepedidos.servicies.exceptions.ObjectNotFoundException;
 
@@ -36,6 +39,12 @@ public class ClienteService {
 	private EnderecoRepository enderecoRepository;
 	
 	public Cliente find(Integer id) {
+		
+		UserSS user = UserService.authenticated();
+		if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado");			
+		}
+		
 		Optional<Cliente> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName(), null));
